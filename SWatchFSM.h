@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'SWatchFSM'.
  *
- * Model version                  : 1.173
+ * Model version                  : 1.186
  * Simulink Coder version         : 8.7 (R2014b) 08-Sep-2014
- * C/C++ source code generated on : Sat Dec 19 12:52:36 2015
+ * C/C++ source code generated on : Thu Jan 21 15:41:00 2016
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -90,6 +90,7 @@ typedef struct {
     uint8_T seconds_T;                 /* '<S1>/SWatch' */
     uint8_T minutes_T;                 /* '<S1>/SWatch' */
     uint8_T hours_T;                   /* '<S1>/SWatch' */
+    uint8_T alarm_cycle;               /* '<S1>/SWatch' */
 } DW_SWatchFSM_T;
 
 /* Zero-crossing (trigger) state */
@@ -121,7 +122,7 @@ extern void SWatchFSM_initialize(RT_MODEL_SWatchFSM_T *const SWatchFSM_M,
     *SWatchFSM_Y_hours_D, uint8_T *SWatchFSM_Y_minutes_D, uint8_T
     *SWatchFSM_Y_seconds_D, uint8_T *SWatchFSM_Y_tenths_D, uint8_T
     *SWatchFSM_Y_mode, uint8_T *SWatchFSM_Y_swatchrun, uint8_T
-    *SWatchFSM_Y_watchset, uint8_T *SWatchFSM_Y_alarm_exp, uint8_T
+    *SWatchFSM_Y_watchset, uint8_T *SWatchFSM_Y_alarm_status, uint8_T
     *SWatchFSM_Y_time_exp);
 extern void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
     SWatchFSM_U_watch_b, boolean_T SWatchFSM_U_swatch_b, boolean_T
@@ -131,7 +132,7 @@ extern void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
     *SWatchFSM_Y_hours_D, uint8_T *SWatchFSM_Y_minutes_D, uint8_T
     *SWatchFSM_Y_seconds_D, uint8_T *SWatchFSM_Y_tenths_D, uint8_T
     *SWatchFSM_Y_mode, uint8_T *SWatchFSM_Y_swatchrun, uint8_T
-    *SWatchFSM_Y_watchset, uint8_T *SWatchFSM_Y_alarm_exp, uint8_T
+    *SWatchFSM_Y_watchset, uint8_T *SWatchFSM_Y_alarm_status, uint8_T
     *SWatchFSM_Y_time_exp);
 
 /*-

@@ -36,7 +36,6 @@
 #define SECBKG		23
 #define TTSBKG		24
 
-
 #define NOEVENT		0x00
 #define WATCHBPRESS 0x01
 #define SWATCHBPRESS 0x02

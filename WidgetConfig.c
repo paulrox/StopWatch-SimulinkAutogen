@@ -113,6 +113,6 @@ Widget MyWatchScr[NUMWIDGETS] = {
 		{29, 70, 62, 42, IMAGE, (void *)&hrs_back},
 		{99, 70, 62, 42, IMAGE, (void *)&min_back},
 		{168, 70, 62, 42, IMAGE, (void *)&sec_back},
-		{230, 70, 62, 42, IMAGE, (void *)&tts_back}
+		{230, 70, 62, 42, IMAGE, (void *)&tts_back},
 };
 

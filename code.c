@@ -68,7 +68,7 @@ DW_SWatchFSM_T DWork;
 
 
 boolean_T Bwatch, Bswatch, Balarm, Btimer, Bplus, Bminus, Bstart, Bstop;
-uint8_T hours=0, minutes=0, seconds=0, tenths=0, mode, alarm_exp, timer_exp, swatchrun, watchset;
+uint8_T hours=0, minutes=0, seconds=0, tenths=0, mode, alarm_status, timer_exp, swatchrun, watchset;
 
 /*
  * SysTick ISR2
@@ -204,7 +204,7 @@ unsigned char i;
 static int oldmode=8;
 static int oldswatchrun = 10;
 static int oldwatchset = 2;
-static int oldalarm = 2;
+static int oldalarm = 3;
 static int oldtimer = 2;
 static unsigned char oh=99, om=99, os=99, ot=99;
 char tstr[3];
@@ -250,7 +250,7 @@ char tstr[3];
 		Bstop = 0;
 
 	SWatchFSM_step(&SWatch_state, Bwatch, Bswatch, Balarm, Btimer, Bplus, Bminus, Bstart, Bstop,
-				&hours, &minutes, &seconds, &tenths, &mode, &swatchrun, &watchset, &alarm_exp, &timer_exp);
+				&hours, &minutes, &seconds, &tenths, &mode, &swatchrun, &watchset, &alarm_status, &timer_exp);
 
 	ClearEvents();
 	Bplus=Bminus=Bwatch=Btimer=Balarm=Bswatch=Bstart=Bstop=0;
@@ -281,13 +281,13 @@ char tstr[3];
 		ot=tenths;
 	}
 
-	if (oldalarm != alarm_exp) {
-		if (alarm_exp == 1) {
+	if (oldalarm != alarm_status) {
+		if (alarm_status == 1) {
 			DrawOn(&MyWatchScr[ALARMEXP]);
 		} else {
 			DrawOff(&MyWatchScr[ALARMEXP]);
 		}
-		oldalarm = alarm_exp;
+		oldalarm = alarm_status;
 	}
 
 	if (oldtimer != timer_exp) {
@@ -323,7 +323,7 @@ int main(void)
 
   /* init state machine */
 	SWatchFSM_initialize(&SWatch_state, &Bwatch, &Bswatch, &Balarm, &Btimer, &Bplus, &Bminus, &Bstart, &Bstop,
-			&hours, &minutes, &seconds, &tenths, &mode, &swatchrun, &watchset, &alarm_exp, &timer_exp);
+			&hours, &minutes, &seconds, &tenths, &mode, &swatchrun, &watchset, &alarm_status, &timer_exp);
 
 	/*Initialize systick */
 	EE_systick_set_period(MILLISECONDS_TO_TICKS(1, SystemCoreClock));

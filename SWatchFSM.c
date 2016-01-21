@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'SWatchFSM'.
  *
- * Model version                  : 1.173
+ * Model version                  : 1.186
  * Simulink Coder version         : 8.7 (R2014b) 08-Sep-2014
- * C/C++ source code generated on : Sat Dec 19 12:52:36 2015
+ * C/C++ source code generated on : Thu Jan 21 15:41:00 2016
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -18,7 +18,8 @@
 
 /* Named constants for Chart: '<S1>/SWatch' */
 #define SWatchFSM_IN_A_count           ((uint8_T)1U)
-#define SWatchFSM_IN_A_stop            ((uint8_T)2U)
+#define SWatchFSM_IN_A_exp             ((uint8_T)2U)
+#define SWatchFSM_IN_A_stop            ((uint8_T)3U)
 #define SWatchFSM_IN_NO_ACTIVE_CHILD   ((uint8_T)0U)
 #define SWatchFSM_IN_S_count           ((uint8_T)1U)
 #define SWatchFSM_IN_S_stop            ((uint8_T)2U)
@@ -74,13 +75,13 @@ static void SWatchFSM_Mode_mng(uint8_T *SWatchFSM_Y_hours_D, uint8_T
     *SWatchFSM_Y_minutes_D, uint8_T *SWatchFSM_Y_seconds_D, uint8_T
     *SWatchFSM_Y_tenths_D, uint8_T *SWatchFSM_Y_mode, uint8_T
     *SWatchFSM_Y_swatchrun, uint8_T *SWatchFSM_Y_watchset, uint8_T
-    *SWatchFSM_Y_alarm_exp, uint8_T *SWatchFSM_Y_time_exp, DW_SWatchFSM_T
+    *SWatchFSM_Y_alarm_status, uint8_T *SWatchFSM_Y_time_exp, DW_SWatchFSM_T
     *SWatchFSM_DW);
 static void SWatchFS_chartstep_c3_SWatchFSM(uint8_T *SWatchFSM_Y_hours_D,
     uint8_T *SWatchFSM_Y_minutes_D, uint8_T *SWatchFSM_Y_seconds_D, uint8_T
     *SWatchFSM_Y_tenths_D, uint8_T *SWatchFSM_Y_mode, uint8_T
     *SWatchFSM_Y_swatchrun, uint8_T *SWatchFSM_Y_watchset, uint8_T
-    *SWatchFSM_Y_alarm_exp, uint8_T *SWatchFSM_Y_time_exp, DW_SWatchFSM_T
+    *SWatchFSM_Y_alarm_status, uint8_T *SWatchFSM_Y_time_exp, DW_SWatchFSM_T
     *SWatchFSM_DW);
 
 /* Function for Chart: '<S1>/SWatch' */
@@ -418,7 +419,7 @@ static void SWatchFSM_timer_m(uint8_T *SWatchFSM_Y_hours_D, uint8_T
                     }
 
                     SWatchFSM_DW->minutes_T = (uint8_T)((uint32_T)(uint8_T)tmp -
-                        (uint8_T)((uint8_T)tmp / 24U * 24U));
+                        (uint8_T)((uint8_T)tmp / 60U * 60U));
                     SWatchFSM_DW->is_timer_set = SWatchFSM_IN_timer_setminutes;
 
                     /* Entry 'timer_setminutes': '<S3>:214' */
@@ -431,7 +432,7 @@ static void SWatchFSM_timer_m(uint8_T *SWatchFSM_Y_hours_D, uint8_T
                     }
 
                     SWatchFSM_DW->minutes_T = (uint8_T)((uint32_T)(uint8_T)qY -
-                        (uint8_T)((uint8_T)qY / 24U * 24U));
+                        (uint8_T)((uint8_T)qY / 60U * 60U));
                     SWatchFSM_DW->is_timer_set = SWatchFSM_IN_timer_setminutes;
 
                     /* Entry 'timer_setminutes': '<S3>:214' */
@@ -496,7 +497,7 @@ static void SWatchFSM_Mode_mng(uint8_T *SWatchFSM_Y_hours_D, uint8_T
     *SWatchFSM_Y_minutes_D, uint8_T *SWatchFSM_Y_seconds_D, uint8_T
     *SWatchFSM_Y_tenths_D, uint8_T *SWatchFSM_Y_mode, uint8_T
     *SWatchFSM_Y_swatchrun, uint8_T *SWatchFSM_Y_watchset, uint8_T
-    *SWatchFSM_Y_alarm_exp, uint8_T *SWatchFSM_Y_time_exp, DW_SWatchFSM_T
+    *SWatchFSM_Y_alarm_status, uint8_T *SWatchFSM_Y_time_exp, DW_SWatchFSM_T
     *SWatchFSM_DW)
 {
     int32_T tmp;
@@ -595,11 +596,9 @@ static void SWatchFSM_Mode_mng(uint8_T *SWatchFSM_Y_hours_D, uint8_T
                 SWatchFSM_DW->is_watch_m = SWatchFSM_IN_watch_showtime;
             } else if (SWatchFSM_DW->is_alarm_m == SWatchFSM_IN_alarm_running) {
                 /* During 'alarm_running': '<S3>:151' */
-                if (SWatchFSM_DW->sfEvent == SWatchFSM_event_stop_b) {
-                    /* Transition: '<S3>:159' */
-                    SWatchFSM_DW->hours_A = 0U;
-                    SWatchFSM_DW->minutes_A = 0U;
-                    *SWatchFSM_Y_alarm_exp = 0U;
+                if ((SWatchFSM_DW->sfEvent == SWatchFSM_event_tick_t) &&
+                        (SWatchFSM_DW->alarm_cycle == 0)) {
+                    /* Transition: '<S3>:299' */
                     SWatchFSM_DW->is_alarm_m = SWatchFSM_IN_alarm_set;
                     SWatchFSM_DW->was_alarm_m = SWatchFSM_IN_alarm_set;
 
@@ -612,6 +611,25 @@ static void SWatchFSM_Mode_mng(uint8_T *SWatchFSM_Y_hours_D, uint8_T
 
                     /* Entry 'alarm_sethours': '<S3>:238' */
                     *SWatchFSM_Y_hours_D = SWatchFSM_DW->hours_A;
+                } else {
+                    if (SWatchFSM_DW->sfEvent == SWatchFSM_event_stop_b) {
+                        /* Transition: '<S3>:159' */
+                        SWatchFSM_DW->hours_A = 0U;
+                        SWatchFSM_DW->minutes_A = 0U;
+                        *SWatchFSM_Y_alarm_status = 0U;
+                        SWatchFSM_DW->is_alarm_m = SWatchFSM_IN_alarm_set;
+                        SWatchFSM_DW->was_alarm_m = SWatchFSM_IN_alarm_set;
+
+                        /* Entry 'alarm_set': '<S3>:237' */
+                        *SWatchFSM_Y_minutes_D = SWatchFSM_DW->minutes_A;
+
+                        /* Entry Internal 'alarm_set': '<S3>:237' */
+                        /* Transition: '<S3>:242' */
+                        SWatchFSM_DW->is_alarm_set = SWatchFSM_IN_alarm_sethours;
+
+                        /* Entry 'alarm_sethours': '<S3>:238' */
+                        *SWatchFSM_Y_hours_D = SWatchFSM_DW->hours_A;
+                    }
                 }
             } else {
                 /* During 'alarm_set': '<S3>:237' */
@@ -621,6 +639,8 @@ static void SWatchFSM_Mode_mng(uint8_T *SWatchFSM_Y_hours_D, uint8_T
                           (SWatchFSM_DW->minutes_A > SWatchFSM_DW->minutes_W))))
                 {
                     /* Transition: '<S3>:152' */
+                    *SWatchFSM_Y_alarm_status = 1U;
+
                     /* Exit Internal 'alarm_set': '<S3>:237' */
                     SWatchFSM_DW->is_alarm_set = SWatchFSM_IN_NO_ACTIVE_CHILD;
                     SWatchFSM_DW->is_alarm_m = SWatchFSM_IN_alarm_running;
@@ -899,7 +919,7 @@ static void SWatchFS_chartstep_c3_SWatchFSM(uint8_T *SWatchFSM_Y_hours_D,
     uint8_T *SWatchFSM_Y_minutes_D, uint8_T *SWatchFSM_Y_seconds_D, uint8_T
     *SWatchFSM_Y_tenths_D, uint8_T *SWatchFSM_Y_mode, uint8_T
     *SWatchFSM_Y_swatchrun, uint8_T *SWatchFSM_Y_watchset, uint8_T
-    *SWatchFSM_Y_alarm_exp, uint8_T *SWatchFSM_Y_time_exp, DW_SWatchFSM_T
+    *SWatchFSM_Y_alarm_status, uint8_T *SWatchFSM_Y_time_exp, DW_SWatchFSM_T
     *SWatchFSM_DW)
 {
     boolean_T guard1 = false;
@@ -910,7 +930,7 @@ static void SWatchFS_chartstep_c3_SWatchFSM(uint8_T *SWatchFSM_Y_hours_D,
     SWatchFSM_Mode_mng(SWatchFSM_Y_hours_D, SWatchFSM_Y_minutes_D,
                        SWatchFSM_Y_seconds_D, SWatchFSM_Y_tenths_D,
                        SWatchFSM_Y_mode, SWatchFSM_Y_swatchrun,
-                       SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_exp,
+                       SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_status,
                        SWatchFSM_Y_time_exp, SWatchFSM_DW);
 
     /* During 'Watch_mng': '<S3>:36' */
@@ -1043,14 +1063,15 @@ static void SWatchFS_chartstep_c3_SWatchFSM(uint8_T *SWatchFSM_Y_hours_D,
     }
 
     /* During 'Alarm_mng': '<S3>:106' */
-    if (SWatchFSM_DW->is_Alarm_mng == SWatchFSM_IN_A_count) {
+    switch (SWatchFSM_DW->is_Alarm_mng) {
+      case SWatchFSM_IN_A_count:
         /* During 'A_count': '<S3>:109' */
         if ((SWatchFSM_DW->sfEvent == SWatchFSM_event_tick_t) &&
                 (SWatchFSM_DW->minutes_W == SWatchFSM_DW->minutes_A) &&
                 (SWatchFSM_DW->hours_W == SWatchFSM_DW->hours_A)) {
             /* Transition: '<S3>:135' */
-            *SWatchFSM_Y_alarm_exp = 1U;
-            SWatchFSM_DW->is_Alarm_mng = SWatchFSM_IN_A_stop;
+            *SWatchFSM_Y_alarm_status = 2U;
+            SWatchFSM_DW->is_Alarm_mng = SWatchFSM_IN_A_exp;
         } else {
             if ((SWatchFSM_DW->sfEvent == SWatchFSM_event_stop_b) &&
                     (*SWatchFSM_Y_mode == 2)) {
@@ -1058,7 +1079,44 @@ static void SWatchFS_chartstep_c3_SWatchFSM(uint8_T *SWatchFSM_Y_hours_D,
                 SWatchFSM_DW->is_Alarm_mng = SWatchFSM_IN_A_stop;
             }
         }
-    } else {
+        break;
+
+      case SWatchFSM_IN_A_exp:
+        /* During 'A_exp': '<S3>:293' */
+        if ((SWatchFSM_DW->sfEvent == SWatchFSM_event_tick_t) &&
+                ((*SWatchFSM_Y_alarm_status == 0) || (SWatchFSM_DW->alarm_cycle ==
+              0))) {
+            /* Transition: '<S3>:296' */
+            SWatchFSM_DW->alarm_cycle = 200U;
+            SWatchFSM_DW->is_Alarm_mng = SWatchFSM_IN_A_stop;
+        } else if ((SWatchFSM_DW->sfEvent == SWatchFSM_event_tick_t) &&
+                   (*SWatchFSM_Y_alarm_status == 2)) {
+            /* Transition: '<S3>:294' */
+            *SWatchFSM_Y_alarm_status = 1U;
+            qY = SWatchFSM_DW->alarm_cycle - 1U;
+            if (qY > SWatchFSM_DW->alarm_cycle) {
+                qY = 0U;
+            }
+
+            SWatchFSM_DW->alarm_cycle = (uint8_T)qY;
+            SWatchFSM_DW->is_Alarm_mng = SWatchFSM_IN_A_exp;
+        } else {
+            if ((SWatchFSM_DW->sfEvent == SWatchFSM_event_tick_t) &&
+                    (*SWatchFSM_Y_alarm_status == 1)) {
+                /* Transition: '<S3>:295' */
+                *SWatchFSM_Y_alarm_status = 2U;
+                qY = SWatchFSM_DW->alarm_cycle - 1U;
+                if (qY > SWatchFSM_DW->alarm_cycle) {
+                    qY = 0U;
+                }
+
+                SWatchFSM_DW->alarm_cycle = (uint8_T)qY;
+                SWatchFSM_DW->is_Alarm_mng = SWatchFSM_IN_A_exp;
+            }
+        }
+        break;
+
+      default:
         /* During 'A_stop': '<S3>:108' */
         if ((SWatchFSM_DW->sfEvent == SWatchFSM_event_start_b) &&
                 (*SWatchFSM_Y_mode == 2) && ((SWatchFSM_DW->hours_A >
@@ -1068,6 +1126,7 @@ static void SWatchFS_chartstep_c3_SWatchFSM(uint8_T *SWatchFSM_Y_hours_D,
             /* Transition: '<S3>:123' */
             SWatchFSM_DW->is_Alarm_mng = SWatchFSM_IN_A_count;
         }
+        break;
     }
 
     /* During 'Timer_mng': '<S3>:107' */
@@ -1187,7 +1246,7 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
                     uint8_T *SWatchFSM_Y_seconds_D, uint8_T
                     *SWatchFSM_Y_tenths_D, uint8_T *SWatchFSM_Y_mode, uint8_T
                     *SWatchFSM_Y_swatchrun, uint8_T *SWatchFSM_Y_watchset,
-                    uint8_T *SWatchFSM_Y_alarm_exp, uint8_T
+                    uint8_T *SWatchFSM_Y_alarm_status, uint8_T
                     *SWatchFSM_Y_time_exp)
 {
     DW_SWatchFSM_T *SWatchFSM_DW = ((DW_SWatchFSM_T *)
@@ -1257,7 +1316,7 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
                 SWatchFSM_Y_minutes_D, SWatchFSM_Y_seconds_D,
                 SWatchFSM_Y_tenths_D, SWatchFSM_Y_mode, SWatchFSM_Y_swatchrun,
-                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_exp,
+                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_status,
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
@@ -1267,7 +1326,7 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
                 SWatchFSM_Y_minutes_D, SWatchFSM_Y_seconds_D,
                 SWatchFSM_Y_tenths_D, SWatchFSM_Y_mode, SWatchFSM_Y_swatchrun,
-                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_exp,
+                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_status,
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
@@ -1277,7 +1336,7 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
                 SWatchFSM_Y_minutes_D, SWatchFSM_Y_seconds_D,
                 SWatchFSM_Y_tenths_D, SWatchFSM_Y_mode, SWatchFSM_Y_swatchrun,
-                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_exp,
+                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_status,
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
@@ -1287,7 +1346,7 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
                 SWatchFSM_Y_minutes_D, SWatchFSM_Y_seconds_D,
                 SWatchFSM_Y_tenths_D, SWatchFSM_Y_mode, SWatchFSM_Y_swatchrun,
-                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_exp,
+                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_status,
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
@@ -1297,7 +1356,7 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
                 SWatchFSM_Y_minutes_D, SWatchFSM_Y_seconds_D,
                 SWatchFSM_Y_tenths_D, SWatchFSM_Y_mode, SWatchFSM_Y_swatchrun,
-                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_exp,
+                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_status,
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
@@ -1307,7 +1366,7 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
                 SWatchFSM_Y_minutes_D, SWatchFSM_Y_seconds_D,
                 SWatchFSM_Y_tenths_D, SWatchFSM_Y_mode, SWatchFSM_Y_swatchrun,
-                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_exp,
+                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_status,
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
@@ -1317,7 +1376,7 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
                 SWatchFSM_Y_minutes_D, SWatchFSM_Y_seconds_D,
                 SWatchFSM_Y_tenths_D, SWatchFSM_Y_mode, SWatchFSM_Y_swatchrun,
-                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_exp,
+                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_status,
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
@@ -1327,7 +1386,7 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
                 SWatchFSM_Y_minutes_D, SWatchFSM_Y_seconds_D,
                 SWatchFSM_Y_tenths_D, SWatchFSM_Y_mode, SWatchFSM_Y_swatchrun,
-                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_exp,
+                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_status,
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
@@ -1337,7 +1396,7 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
                 SWatchFSM_Y_minutes_D, SWatchFSM_Y_seconds_D,
                 SWatchFSM_Y_tenths_D, SWatchFSM_Y_mode, SWatchFSM_Y_swatchrun,
-                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_exp,
+                SWatchFSM_Y_watchset, SWatchFSM_Y_alarm_status,
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
     }
@@ -1410,7 +1469,7 @@ void SWatchFSM_initialize(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
     *SWatchFSM_Y_hours_D, uint8_T *SWatchFSM_Y_minutes_D, uint8_T
     *SWatchFSM_Y_seconds_D, uint8_T *SWatchFSM_Y_tenths_D, uint8_T
     *SWatchFSM_Y_mode, uint8_T *SWatchFSM_Y_swatchrun, uint8_T
-    *SWatchFSM_Y_watchset, uint8_T *SWatchFSM_Y_alarm_exp, uint8_T
+    *SWatchFSM_Y_watchset, uint8_T *SWatchFSM_Y_alarm_status, uint8_T
     *SWatchFSM_Y_time_exp)
 {
     DW_SWatchFSM_T *SWatchFSM_DW = ((DW_SWatchFSM_T *)
@@ -1442,7 +1501,7 @@ void SWatchFSM_initialize(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
     (*SWatchFSM_Y_mode) = 0U;
     (*SWatchFSM_Y_swatchrun) = 0U;
     (*SWatchFSM_Y_watchset) = 0U;
-    (*SWatchFSM_Y_alarm_exp) = 0U;
+    (*SWatchFSM_Y_alarm_status) = 0U;
     (*SWatchFSM_Y_time_exp) = 0U;
 
     {
@@ -1510,12 +1569,13 @@ void SWatchFSM_initialize(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
         SWatchFSM_DW->hours_A = 0U;
         SWatchFSM_DW->minutes_A = 0U;
 
-        /* InitializeConditions for Outport: '<Root>/alarm_exp' incorporates:
+        /* InitializeConditions for Outport: '<Root>/alarm_status' incorporates:
          *  InitializeConditions for Chart: '<S1>/SWatch'
          */
-        *SWatchFSM_Y_alarm_exp = 0U;
+        *SWatchFSM_Y_alarm_status = 0U;
 
         /* InitializeConditions for Chart: '<S1>/SWatch' */
+        SWatchFSM_DW->alarm_cycle = 200U;
         SWatchFSM_DW->is_Alarm_mng = SWatchFSM_IN_A_stop;
         SWatchFSM_DW->is_active_Timer_mng = 1U;
 

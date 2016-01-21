@@ -100,7 +100,3 @@ unsigned char WPrint(Widget *w, char *s)
 	} else
 		return 0;
 }
-
-
-
-
