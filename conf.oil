@@ -52,10 +52,8 @@ CPU mySystem {
 			APP_SRC = "mypictures.c";
 			APP_SRC = "Event.c";
 			APP_SRC = "Widget.c";
-			APP_SRC = "WidgetConfig.c";
 			APP_SRC = "SWatchFSM.c";
 			APP_SRC = "STMPE811QTR.c";
-			APP_SRC = "debug.c";
 			COMPILER_TYPE = GNU; 
 			MULTI_STACK = FALSE;
 		};

@@ -1,4 +1,13 @@
-/* ###*B*###
+/**
+ ******************************************************************************
+ * @file code.c
+ * @author Paolo Sassi
+ * @date 21 January 2016
+ * @brief Contains the body of all tasks and the global
+ *  variables defined.
+ ******************************************************************************
+ * @attention
+ *
  * ERIKA Enterprise - a tiny RTOS for small microcontrollers
  *
  * Copyright (C) 2002-2013  Evidence Srl
@@ -36,7 +45,8 @@
  * version 2 along with ERIKA Enterprise; if not, write to the
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301 USA.
- * ###*E*### */
+ ******************************************************************************
+ */
 
 #include "ee.h"
 #include "ee_irq.h"
@@ -49,16 +59,11 @@
 #include "STMPE811QTR.h"
 #include "mypictures.h"
 #include "Widget.h"
-#include "WidgetConfig.h"
 #include "Touch.h"
 #include "Event.h"
 #include "SWatchFSM.h"
 #include "lcd_add.h"
 #include "fonts.h"
-#include "debug.h"
-
-static void strencode1digit(char *str, int digit);
-static void strencode2digit(char *str, int digit);
 
 /* State variables for generated code */
 RT_MODEL_SWatchFSM_T SWatch_state;
@@ -70,51 +75,84 @@ DW_SWatchFSM_T DWork;
 boolean_T Bwatch, Bswatch, Balarm, Btimer, Bplus, Bminus, Bstart, Bstop;
 uint8_T hours=0, minutes=0, seconds=0, tenths=0, mode, alarm_status, timer_exp, swatchrun, watchset;
 
-/*
- * SysTick ISR2
+/** @defgroup utility Utility
+ * @{
  */
-ISR2(systick_handler)
+
+/**
+ * @brief Converts a one digit integer into a string
+ * @param str: pointer to the returning string.
+ * @param digit: integer digit to be converted.
+ * @retval None
+ */
+static void strencode1digit(char *str, int digit)
 {
-	/* count the interrupts, waking up expired alarms */
-	CounterTick(myCounter);
+	str[1] = 0;
+	str[0] = digit + '0';
 }
 
-/*
- * TASK LCD
+/**
+ * @brief Converts a two digits integer into a string
+ * @param str: pointer to the returning string.
+ * @param digit: integer digits to be converted.
+ * @retval None
  */
-
-TASK(TaskLCD)
+static void strencode2digit(char *str, int digit)
 {
-unsigned int px, py;
-TPoint p;
+	str[2]=0;
+	str[0]=digit/10+'0';
+	str[1]=digit%10+'0';
+}
 
-	if (GetTouch_SC_Async(&px, &py)) {
-		p.x = px;
-		p.y = py;
-		OnTouch(MyWatchScr, &p);
+/**
+ * @brief Updates the time on the screen.
+ * @param oh: Old hours.
+ * @param om: Old minutes.
+ * @param os: Old seconds.
+ * @param ot: Old tenths.
+ * @param oldmode: Old application mode.
+ * @retval None
+ */
+static void updateTime(uint8_T *oh, uint8_T *om, uint8_T *os, uint8_T *ot,
+		uint8_T oldmode)
+{
+char tstr[3];
+
+	if (hours != *oh) {
+		strencode2digit(tstr, (int)hours);
+		DrawOn(&MyWatchScr[HRSBKG]);
+		WPrint(&MyWatchScr[HRSSTR], tstr);
+		*oh = hours;
+	}
+	if (minutes != *om) {
+		strencode2digit(tstr, (int)minutes);
+		DrawOn(&MyWatchScr[MINBKG]);
+		WPrint(&MyWatchScr[MINSTR], tstr);
+		*om = minutes;
+	}
+	if (seconds != *os) {
+		strencode2digit(tstr, (int)seconds);
+		DrawOn(&MyWatchScr[SECBKG]);
+		WPrint(&MyWatchScr[SECSTR], tstr);
+		*os = seconds;
+	}
+	if ((tenths != *ot && mode == SWATCHMODE) ||
+		(oldmode != SWATCHMODE && mode == SWATCHMODE)) {
+		strencode1digit(tstr, (int)tenths);
+		DrawOn(&MyWatchScr[TTSBKG]);
+		WPrint(&MyWatchScr[TTSSEP], ".");
+		WPrint(&MyWatchScr[TTSSTR], tstr);
+		*ot = tenths;
 	}
 }
 
-
-/*
- * TASK Clock
+/**
+ * @brief Updates the screen widgets.
+ * @param om: Old application mode.
+ * @param m: New application mode.
+ * @retval None
  */
-unsigned char IsUpdateTime()
-{
-unsigned char res;
-static unsigned char oh=0, om=0, os=0;
-
-	if (hours!=oh || minutes!=om || seconds!= os)
-		res = 1;
-	else
-		res = 0;
-	oh = hours;
-	om = minutes;
-	os = seconds;
-	return res;
-}
-
-void updateScreen(unsigned char om, unsigned char m)
+void updateScreen(uint8_T om, uint8_T m)
 {
 char tstr[3];
 
@@ -184,103 +222,85 @@ char tstr[3];
 		break;
 	}
 }
+/**
+ * @}
+ */
 
-void strencode2digit(char *str, int digit)
+/**
+ * @defgroup isr Interrupt Handler
+ * @{
+ */
+/**
+ * @brief System Tick interrupt handler
+ */
+ISR2(systick_handler)
 {
-	str[2]=0;
-	str[0]=digit/10+'0';
-	str[1]=digit%10+'0';
+	/* count the interrupts, waking up expired alarms */
+	CounterTick(myCounter);
 }
 
-static void strencode1digit(char *str, int digit)
+/**
+ * @}
+ */
+
+/** @defgroup Tasks
+ *  @{
+ */
+/**
+ * 	@brief LDC task body.
+ *
+ * 	This task is periodically activated in order to
+ * 	get the touch events.
+ */
+TASK(TaskLCD)
 {
-	str[1] = 0;
-	str[0] = digit + '0';
+unsigned int px, py;
+TPoint p;
+
+	if (GetTouch_SC_Async(&px, &py)) {
+		p.x = px;
+		p.y = py;
+		OnTouch(MyWatchScr, &p);
+	}
 }
 
+/**
+ * @brief Clock task body.
+ *
+ * This is the most important task. It dispatches events to the
+ * state machine and catches the button presses events.
+ */
 TASK(TaskClock)
 {
-unsigned char i;
-static int oldmode=8;
-static int oldswatchrun = 10;
-static int oldwatchset = 2;
-static int oldalarm = 3;
-static int oldtimer = 2;
-static unsigned char oh=99, om=99, os=99, ot=99;
-char tstr[3];
+static uint8_T oldmode=8;
+static uint8_T oldswatchrun = 10;
+static uint8_T oldwatchset = 2;
+static uint8_T oldalarm = 3;
+static uint8_T oldtimer = 2;
+static uint8_T oh=99, om=99, os=99, ot=99;
 
-	if (IsEvent(WATCHBPRESS))
-		Bwatch=1;
-	else
-		Bwatch=0;
 
-	if (IsEvent(SWATCHBPRESS))
-		Bswatch=1;
-	else
-		Bswatch=0;
+	Bwatch 	= (IsEvent(WATCHBPRESS)) 	? 1 : 0;
+	Bswatch = (IsEvent(SWATCHBPRESS)) 	? 1 : 0;
+	Balarm 	= (IsEvent(ALARMBPRESS))	? 1 : 0;
+	Btimer 	= (IsEvent(TIMERBPRESS))	? 1 : 0;
+	Bplus 	= (IsEvent(PLUSBPRESS)) 	? 1 : 0;
+	Bminus 	= (IsEvent(MINUSBPRESS))	? 1 : 0;
+	Bstart 	= (IsEvent(STARTBPRESS))	? 1 : 0;
+	Bstop 	= (IsEvent(STOPBPRESS))		? 1 : 0;
 
-	if (IsEvent(ALARMBPRESS))
-		Balarm=1;
-	else
-		Balarm=0;
-
-	if (IsEvent(TIMERBPRESS))
-		Btimer=1;
-	else
-		Btimer=0;
-
-	if (IsEvent(PLUSBPRESS))
-		Bplus=1;
-	else
-		Bplus=0;
-
-	if (IsEvent(MINUSBPRESS))
-		Bminus=1;
-	else
-		Bminus=0;
-
-	if (IsEvent(STARTBPRESS))
-		Bstart = 1;
-	else
-		Bstart = 0;
-
-	if (IsEvent(STOPBPRESS))
-		Bstop = 1;
-	else
-		Bstop = 0;
-
-	SWatchFSM_step(&SWatch_state, Bwatch, Bswatch, Balarm, Btimer, Bplus, Bminus, Bstart, Bstop,
-				&hours, &minutes, &seconds, &tenths, &mode, &swatchrun, &watchset, &alarm_status, &timer_exp);
+	/* dispatch the signals to the SM */
+	SWatchFSM_step(&SWatch_state, Bwatch, Bswatch, Balarm, Btimer,
+			Bplus, Bminus, Bstart, Bstop, &hours, &minutes, &seconds,
+			&tenths, &mode, &swatchrun, &watchset, &alarm_status, &timer_exp);
 
 	ClearEvents();
 	Bplus=Bminus=Bwatch=Btimer=Balarm=Bswatch=Bstart=Bstop=0;
 
-	if (hours!=oh) {
-		strencode2digit(tstr, (int)hours);
-		DrawOn(&MyWatchScr[HRSBKG]);
-		WPrint(&MyWatchScr[HRSSTR], tstr);
-		oh=hours;
-	}
-	if (minutes!=om) {
-		strencode2digit(tstr, (int)minutes);
-		DrawOn(&MyWatchScr[MINBKG]);
-		WPrint(&MyWatchScr[MINSTR], tstr);
-		om=minutes;
-	}
-	if (seconds!= os) {
-		strencode2digit(tstr, (int)seconds);
-		DrawOn(&MyWatchScr[SECBKG]);
-		WPrint(&MyWatchScr[SECSTR], tstr);
-		os=seconds;
-	}
-	if ((tenths != ot && mode == SWATCHMODE) || (oldmode != SWATCHMODE && mode == SWATCHMODE)) {
-		strencode1digit(tstr, (int)tenths);
-		DrawOn(&MyWatchScr[TTSBKG]);
-		WPrint(&MyWatchScr[TTSSEP], ".");
-		WPrint(&MyWatchScr[TTSSTR], tstr);
-		ot=tenths;
-	}
+	/* Updates the displayed time */
+	updateTime(&oh, &om, &os, &ot, oldmode);
 
+	/* Updates alarm and timer status */
 	if (oldalarm != alarm_status) {
 		if (alarm_status == 1) {
 			DrawOn(&MyWatchScr[ALARMEXP]);
@@ -289,7 +309,6 @@ char tstr[3];
 		}
 		oldalarm = alarm_status;
 	}
-
 	if (oldtimer != timer_exp) {
 			if (timer_exp == 1) {
 				DrawOn(&MyWatchScr[TIMEREXP]);
@@ -297,9 +316,11 @@ char tstr[3];
 				DrawOff(&MyWatchScr[TIMEREXP]);
 			}
 			oldtimer = timer_exp;
-		}
+	}
 
-	if (oldmode != mode || oldswatchrun != swatchrun || oldwatchset != watchset) {
+	/* Checks if the application mode has changed or not */
+	if (oldmode != mode || oldswatchrun != swatchrun ||
+			oldwatchset != watchset) {
 	updateScreen(oldmode, mode);
 	oldmode = mode;
 	oldswatchrun = swatchrun;
@@ -307,47 +328,43 @@ char tstr[3];
 	}
 }
 
-/*
- * MAIN TASK
+/**
+ * @brief Main task of the application
+ * @param None
+ * @retval None This function should never return.
  */
 int main(void)
 {
-
+	/* Initializes the system */
 	SystemInit();
-  /*Initializes Erika related stuffs*/
 	EE_system_init();
-
-	SWatch_state.errorStatus = errorSig;
-	SWatch_state.ModelData.prevZCSigState = &ZCSig;
-	SWatch_state.ModelData.dwork = &DWork;
-
-  /* init state machine */
-	SWatchFSM_initialize(&SWatch_state, &Bwatch, &Bswatch, &Balarm, &Btimer, &Bplus, &Bminus, &Bstart, &Bstop,
-			&hours, &minutes, &seconds, &tenths, &mode, &swatchrun, &watchset, &alarm_status, &timer_exp);
-
-	/*Initialize systick */
 	EE_systick_set_period(MILLISECONDS_TO_TICKS(1, SystemCoreClock));
 	EE_systick_enable_int();
 	EE_systick_start();
 
 	/* Initializes LCD and touchscreen */
 	IOE_Config();
-	/* Initialize the LCD */
 	STM32f4_Discovery_LCD_Init();
-
 	InitTouch(-0.0853, 0.0665, -331, 15);
-
-	/* Draw the background */
 	DrawInit(MyWatchScr);
 
-	/* Program cyclic alarms which will fire after an initial offset,
-	 * and after that periodically
-	 * */
+	/* Initializes the state machine */
+	SWatch_state.errorStatus = errorSig;
+	SWatch_state.ModelData.prevZCSigState = &ZCSig;
+	SWatch_state.ModelData.dwork = &DWork;
+	SWatchFSM_initialize(&SWatch_state, &Bwatch, &Bswatch,
+			&Balarm, &Btimer, &Bplus, &Bminus, &Bstart, &Bstop,
+			&hours, &minutes, &seconds, &tenths, &mode, &swatchrun,
+			&watchset, &alarm_status, &timer_exp);
+
+	/* Application task set */
 	SetRelAlarm(AlarmTaskLCD, 10, 100);
 	SetRelAlarm(AlarmTaskClock, 10, 50);
 
-  /* Forever loop: background activities (if any) should go here */
+	/* Forever loop: background activities (if any) should go here */
 	for (;;) { }
 }
 
-
+/**
+ * @}
+ */
