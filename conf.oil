@@ -121,7 +121,7 @@ CPU mySystem {
 	};
 
 	TASK TaskLCD {
-		PRIORITY = 0x01;   
+		PRIORITY = 0x01;	/* Low priority */
 		AUTOSTART = FALSE;
 		STACK = SHARED;
 		ACTIVATION = 1;   

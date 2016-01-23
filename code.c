@@ -152,7 +152,7 @@ char tstr[3];
  * @param m: New application mode.
  * @retval None
  */
-void updateScreen(uint8_T om, uint8_T m)
+static void updateScreen(uint8_T om, uint8_T m)
 {
 char tstr[3];
 
