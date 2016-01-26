@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'SWatchFSM'.
  *
- * Model version                  : 1.186
+ * Model version                  : 1.187
  * Simulink Coder version         : 8.7 (R2014b) 08-Sep-2014
- * C/C++ source code generated on : Thu Jan 21 15:41:00 2016
+ * C/C++ source code generated on : Tue Jan 26 14:41:50 2016
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -71,6 +71,8 @@ static void SWatchFSM_timer_m(uint8_T *SWatchFSM_Y_hours_D, uint8_T
     *SWatchFSM_Y_minutes_D, uint8_T *SWatchFSM_Y_seconds_D, uint8_T
     *SWatchFSM_Y_mode, uint8_T *SWatchFSM_Y_watchset, uint8_T
     *SWatchFSM_Y_time_exp, DW_SWatchFSM_T *SWatchFSM_DW);
+static void SWatchFS_exit_internal_Mode_mng(uint8_T *SWatchFSM_Y_watchset,
+    DW_SWatchFSM_T *SWatchFSM_DW);
 static void SWatchFSM_Mode_mng(uint8_T *SWatchFSM_Y_hours_D, uint8_T
     *SWatchFSM_Y_minutes_D, uint8_T *SWatchFSM_Y_seconds_D, uint8_T
     *SWatchFSM_Y_tenths_D, uint8_T *SWatchFSM_Y_mode, uint8_T
@@ -493,20 +495,22 @@ static void SWatchFSM_timer_m(uint8_T *SWatchFSM_Y_hours_D, uint8_T
 }
 
 /* Function for Chart: '<S1>/SWatch' */
-static void SWatchFSM_Mode_mng(uint8_T *SWatchFSM_Y_hours_D, uint8_T
-    *SWatchFSM_Y_minutes_D, uint8_T *SWatchFSM_Y_seconds_D, uint8_T
-    *SWatchFSM_Y_tenths_D, uint8_T *SWatchFSM_Y_mode, uint8_T
-    *SWatchFSM_Y_swatchrun, uint8_T *SWatchFSM_Y_watchset, uint8_T
-    *SWatchFSM_Y_alarm_status, uint8_T *SWatchFSM_Y_time_exp, DW_SWatchFSM_T
-    *SWatchFSM_DW)
+static void SWatchFS_exit_internal_Mode_mng(uint8_T *SWatchFSM_Y_watchset,
+    DW_SWatchFSM_T *SWatchFSM_DW)
 {
-    int32_T tmp;
-    uint32_T qY;
+    /* Exit Internal 'Mode_mng': '<S3>:19' */
+    if (SWatchFSM_DW->is_Mode_mng == SWatchFSM_IN_watch_m) {
+        /* Exit Internal 'watch_m': '<S3>:20' */
+        /* Exit Internal 'watch_settime': '<S3>:254' */
+        SWatchFSM_DW->is_watch_settime = SWatchFSM_IN_NO_ACTIVE_CHILD;
+        SWatchFSM_DW->is_watch_m = SWatchFSM_IN_NO_ACTIVE_CHILD;
 
-    /* During 'Mode_mng': '<S3>:19' */
-    if (SWatchFSM_DW->sfEvent == SWatchFSM_event_swatch_b) {
-        /* Transition: '<S3>:276' */
-        /* Exit Internal 'Mode_mng': '<S3>:19' */
+        /* Exit 'watch_m': '<S3>:20' */
+        *SWatchFSM_Y_watchset = 0U;
+        SWatchFSM_DW->is_Mode_mng = SWatchFSM_IN_NO_ACTIVE_CHILD;
+    } else {
+        SWatchFSM_DW->is_Mode_mng = SWatchFSM_IN_NO_ACTIVE_CHILD;
+
         /* Exit Internal 'alarm_m': '<S3>:23' */
         SWatchFSM_DW->is_alarm_m = SWatchFSM_IN_NO_ACTIVE_CHILD;
 
@@ -521,11 +525,24 @@ static void SWatchFSM_Mode_mng(uint8_T *SWatchFSM_Y_hours_D, uint8_T
 
         /* Exit Internal 'timer_set': '<S3>:211' */
         SWatchFSM_DW->is_timer_set = SWatchFSM_IN_NO_ACTIVE_CHILD;
+    }
+}
 
-        /* Exit Internal 'watch_m': '<S3>:20' */
-        /* Exit Internal 'watch_settime': '<S3>:254' */
-        SWatchFSM_DW->is_watch_settime = SWatchFSM_IN_NO_ACTIVE_CHILD;
-        SWatchFSM_DW->is_watch_m = SWatchFSM_IN_NO_ACTIVE_CHILD;
+/* Function for Chart: '<S1>/SWatch' */
+static void SWatchFSM_Mode_mng(uint8_T *SWatchFSM_Y_hours_D, uint8_T
+    *SWatchFSM_Y_minutes_D, uint8_T *SWatchFSM_Y_seconds_D, uint8_T
+    *SWatchFSM_Y_tenths_D, uint8_T *SWatchFSM_Y_mode, uint8_T
+    *SWatchFSM_Y_swatchrun, uint8_T *SWatchFSM_Y_watchset, uint8_T
+    *SWatchFSM_Y_alarm_status, uint8_T *SWatchFSM_Y_time_exp, DW_SWatchFSM_T
+    *SWatchFSM_DW)
+{
+    int32_T tmp;
+    uint32_T qY;
+
+    /* During 'Mode_mng': '<S3>:19' */
+    if (SWatchFSM_DW->sfEvent == SWatchFSM_event_swatch_b) {
+        /* Transition: '<S3>:276' */
+        SWatchFS_exit_internal_Mode_mng(SWatchFSM_Y_watchset, SWatchFSM_DW);
         SWatchFSM_DW->is_Mode_mng = SWatchFSM_IN_swatch_m;
 
         /* Entry 'swatch_m': '<S3>:22' */
@@ -770,6 +787,9 @@ static void SWatchFSM_Mode_mng(uint8_T *SWatchFSM_Y_hours_D, uint8_T
                 /* Exit Internal 'watch_settime': '<S3>:254' */
                 SWatchFSM_DW->is_watch_settime = SWatchFSM_IN_NO_ACTIVE_CHILD;
                 SWatchFSM_DW->is_watch_m = SWatchFSM_IN_NO_ACTIVE_CHILD;
+
+                /* Exit 'watch_m': '<S3>:20' */
+                *SWatchFSM_Y_watchset = 0U;
                 SWatchFSM_DW->is_Mode_mng = SWatchFSM_IN_timer_m;
 
                 /* Entry 'timer_m': '<S3>:21' */
@@ -785,6 +805,9 @@ static void SWatchFSM_Mode_mng(uint8_T *SWatchFSM_Y_hours_D, uint8_T
                 /* Exit Internal 'watch_settime': '<S3>:254' */
                 SWatchFSM_DW->is_watch_settime = SWatchFSM_IN_NO_ACTIVE_CHILD;
                 SWatchFSM_DW->is_watch_m = SWatchFSM_IN_NO_ACTIVE_CHILD;
+
+                /* Exit 'watch_m': '<S3>:20' */
+                *SWatchFSM_Y_watchset = 0U;
                 SWatchFSM_DW->is_Mode_mng = SWatchFSM_IN_alarm_m;
 
                 /* Entry 'alarm_m': '<S3>:23' */

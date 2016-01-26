@@ -62,8 +62,6 @@
 #include "Touch.h"
 #include "Event.h"
 #include "SWatchFSM.h"
-#include "lcd_add.h"
-#include "fonts.h"
 
 /* State variables for generated code */
 RT_MODEL_SWatchFSM_T SWatch_state;
@@ -164,8 +162,10 @@ char tstr[3];
 		DrawOff(&MyWatchScr[BMINUS]);
 		break;
 	case SWATCHMODE:
-		DrawOff(&MyWatchScr[BSWATCH]);
-		DrawOff(&MyWatchScr[BSTART]);
+		if (om != m) {
+			DrawOff(&MyWatchScr[BSWATCH]);
+			DrawOff(&MyWatchScr[BSTART]);
+		}
 		DrawOff(&MyWatchScr[BSTOP]);
 		break;
 	case ALARMMODE : case TIMERMODE:
@@ -197,8 +197,10 @@ char tstr[3];
 		}
 		break;
 	case SWATCHMODE:
-		DrawOn(&MyWatchScr[BSWATCH]);
-		DrawOn(&MyWatchScr[BSTART]);
+		if (om != m) {
+			DrawOn(&MyWatchScr[BSWATCH]);
+			DrawOn(&MyWatchScr[BSTART]);
+		}
 		if (swatchrun <= 1) {
 			DrawOn(&MyWatchScr[BSTOP]);
 		} else {
