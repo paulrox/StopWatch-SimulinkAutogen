@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'SWatchFSM'.
  *
- * Model version                  : 1.187
+ * Model version                  : 1.199
  * Simulink Coder version         : 8.7 (R2014b) 08-Sep-2014
- * C/C++ source code generated on : Tue Jan 26 14:41:50 2016
+ * C/C++ source code generated on : Wed Feb 17 14:10:03 2016
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: 32-bit Generic
@@ -1278,9 +1278,8 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
         SWatchFSM_M->ModelData.prevZCSigState);
     uint8_T rtb_FixPtSum1;
     boolean_T zcEvent[9];
-    int8_T rtb_inputevents[9];
-    int32_T i;
     boolean_T tmp;
+    int32_T i;
 
     /* Chart: '<S1>/SWatch' incorporates:
      *  TriggerPort: '<S3>/ input events '
@@ -1288,52 +1287,61 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
     /* DataTypeConversion: '<S1>/Data Type Conversion' incorporates:
      *  UnitDelay: '<S2>/Output'
      */
-    zcEvent[0] = ((SWatchFSM_DW->Output_DSTATE != 0) &&
-                  (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[0] != POS_ZCSIG));
+    zcEvent[0] = (((SWatchFSM_DW->Output_DSTATE != 0) !=
+                   (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[0] == POS_ZCSIG)) &&
+                  (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[0] != UNINITIALIZED_ZCSIG));
 
     /* Inport: '<Root>/watch_b' */
-    zcEvent[1] = (SWatchFSM_U_watch_b && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[1]
-                   != POS_ZCSIG));
+    zcEvent[1] = (((SWatchFSM_PrevZCX->SWatch_Trig_ZCE[1] == POS_ZCSIG) !=
+                   SWatchFSM_U_watch_b) && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[1]
+                   != UNINITIALIZED_ZCSIG));
 
     /* Inport: '<Root>/swatch_b' */
-    zcEvent[2] = (SWatchFSM_U_swatch_b && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[2]
-                   != POS_ZCSIG));
+    zcEvent[2] = (((SWatchFSM_PrevZCX->SWatch_Trig_ZCE[2] == POS_ZCSIG) !=
+                   SWatchFSM_U_swatch_b) && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE
+                   [2] != UNINITIALIZED_ZCSIG));
 
     /* Inport: '<Root>/alarm_b' */
-    zcEvent[3] = (SWatchFSM_U_alarm_b && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[3]
-                   != POS_ZCSIG));
+    zcEvent[3] = (((SWatchFSM_PrevZCX->SWatch_Trig_ZCE[3] == POS_ZCSIG) !=
+                   SWatchFSM_U_alarm_b) && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[3]
+                   != UNINITIALIZED_ZCSIG));
 
     /* Inport: '<Root>/timer_b' */
-    zcEvent[4] = (SWatchFSM_U_timer_b && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[4]
-                   != POS_ZCSIG));
+    zcEvent[4] = (((SWatchFSM_PrevZCX->SWatch_Trig_ZCE[4] == POS_ZCSIG) !=
+                   SWatchFSM_U_timer_b) && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[4]
+                   != UNINITIALIZED_ZCSIG));
 
     /* Inport: '<Root>/plus_b' */
-    zcEvent[5] = (SWatchFSM_U_plus_b && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[5]
-                   != POS_ZCSIG));
+    zcEvent[5] = (((SWatchFSM_PrevZCX->SWatch_Trig_ZCE[5] == POS_ZCSIG) !=
+                   SWatchFSM_U_plus_b) && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[5]
+                   != UNINITIALIZED_ZCSIG));
 
     /* Inport: '<Root>/minus_b' */
-    zcEvent[6] = (SWatchFSM_U_minus_b && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[6]
-                   != POS_ZCSIG));
+    zcEvent[6] = (((SWatchFSM_PrevZCX->SWatch_Trig_ZCE[6] == POS_ZCSIG) !=
+                   SWatchFSM_U_minus_b) && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[6]
+                   != UNINITIALIZED_ZCSIG));
 
     /* Inport: '<Root>/start_b' */
-    zcEvent[7] = (SWatchFSM_U_start_b && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[7]
-                   != POS_ZCSIG));
+    zcEvent[7] = (((SWatchFSM_PrevZCX->SWatch_Trig_ZCE[7] == POS_ZCSIG) !=
+                   SWatchFSM_U_start_b) && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[7]
+                   != UNINITIALIZED_ZCSIG));
 
     /* Inport: '<Root>/stop_b' */
-    zcEvent[8] = (SWatchFSM_U_stop_b && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[8]
-                   != POS_ZCSIG));
+    zcEvent[8] = (((SWatchFSM_PrevZCX->SWatch_Trig_ZCE[8] == POS_ZCSIG) !=
+                   SWatchFSM_U_stop_b) && (SWatchFSM_PrevZCX->SWatch_Trig_ZCE[8]
+                   != UNINITIALIZED_ZCSIG));
     tmp = false;
     for (i = 0; i < 9; i++) {
         tmp = (tmp || zcEvent[i]);
     }
 
     if (tmp) {
-        for (i = 0; i < 9; i++) {
-            rtb_inputevents[i] = (int8_T)zcEvent[i];
-        }
-
+        /* DataTypeConversion: '<S1>/Data Type Conversion' incorporates:
+         *  UnitDelay: '<S2>/Output'
+         */
         /* Gateway: SWatchFSM/SWatch */
-        if (rtb_inputevents[0U] == 1) {
+        if ((int8_T)(zcEvent[0] ? SWatchFSM_DW->Output_DSTATE != 0 ?
+                     RISING_ZCEVENT : FALLING_ZCEVENT : NO_ZCEVENT) != 0) {
             /* Event: '<S3>:5' */
             SWatchFSM_DW->sfEvent = SWatchFSM_event_tick_t;
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
@@ -1343,7 +1351,9 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
-        if (rtb_inputevents[1U] == 1) {
+        /* Inport: '<Root>/watch_b' */
+        if ((int8_T)(zcEvent[1] ? SWatchFSM_U_watch_b ? RISING_ZCEVENT :
+                     FALLING_ZCEVENT : NO_ZCEVENT) == 1) {
             /* Event: '<S3>:6' */
             SWatchFSM_DW->sfEvent = SWatchFSM_event_watch_b;
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
@@ -1353,7 +1363,9 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
-        if (rtb_inputevents[2U] == 1) {
+        /* Inport: '<Root>/swatch_b' */
+        if ((int8_T)(zcEvent[2] ? SWatchFSM_U_swatch_b ? RISING_ZCEVENT :
+                     FALLING_ZCEVENT : NO_ZCEVENT) == 1) {
             /* Event: '<S3>:16' */
             SWatchFSM_DW->sfEvent = SWatchFSM_event_swatch_b;
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
@@ -1363,7 +1375,9 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
-        if (rtb_inputevents[3U] == 1) {
+        /* Inport: '<Root>/alarm_b' */
+        if ((int8_T)(zcEvent[3] ? SWatchFSM_U_alarm_b ? RISING_ZCEVENT :
+                     FALLING_ZCEVENT : NO_ZCEVENT) == 1) {
             /* Event: '<S3>:7' */
             SWatchFSM_DW->sfEvent = SWatchFSM_event_alarm_b;
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
@@ -1373,7 +1387,9 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
-        if (rtb_inputevents[4U] == 1) {
+        /* Inport: '<Root>/timer_b' */
+        if ((int8_T)(zcEvent[4] ? SWatchFSM_U_timer_b ? RISING_ZCEVENT :
+                     FALLING_ZCEVENT : NO_ZCEVENT) == 1) {
             /* Event: '<S3>:8' */
             SWatchFSM_DW->sfEvent = SWatchFSM_event_timer_b;
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
@@ -1383,7 +1399,9 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
-        if (rtb_inputevents[5U] == 1) {
+        /* Inport: '<Root>/plus_b' */
+        if ((int8_T)(zcEvent[5] ? SWatchFSM_U_plus_b ? RISING_ZCEVENT :
+                     FALLING_ZCEVENT : NO_ZCEVENT) == 1) {
             /* Event: '<S3>:9' */
             SWatchFSM_DW->sfEvent = SWatchFSM_event_plus_b;
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
@@ -1393,7 +1411,9 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
-        if (rtb_inputevents[6U] == 1) {
+        /* Inport: '<Root>/minus_b' */
+        if ((int8_T)(zcEvent[6] ? SWatchFSM_U_minus_b ? RISING_ZCEVENT :
+                     FALLING_ZCEVENT : NO_ZCEVENT) == 1) {
             /* Event: '<S3>:10' */
             SWatchFSM_DW->sfEvent = SWatchFSM_event_minus_b;
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
@@ -1403,7 +1423,9 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
-        if (rtb_inputevents[7U] == 1) {
+        /* Inport: '<Root>/start_b' */
+        if ((int8_T)(zcEvent[7] ? SWatchFSM_U_start_b ? RISING_ZCEVENT :
+                     FALLING_ZCEVENT : NO_ZCEVENT) == 1) {
             /* Event: '<S3>:11' */
             SWatchFSM_DW->sfEvent = SWatchFSM_event_start_b;
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
@@ -1413,7 +1435,9 @@ void SWatchFSM_step(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
                 SWatchFSM_Y_time_exp, SWatchFSM_DW);
         }
 
-        if (rtb_inputevents[8U] == 1) {
+        /* Inport: '<Root>/stop_b' */
+        if ((int8_T)(zcEvent[8] ? SWatchFSM_U_stop_b ? RISING_ZCEVENT :
+                     FALLING_ZCEVENT : NO_ZCEVENT) == 1) {
             /* Event: '<S3>:12' */
             SWatchFSM_DW->sfEvent = SWatchFSM_event_stop_b;
             SWatchFS_chartstep_c3_SWatchFSM(SWatchFSM_Y_hours_D,
@@ -1530,7 +1554,7 @@ void SWatchFSM_initialize(RT_MODEL_SWatchFSM_T *const SWatchFSM_M, boolean_T
     {
         int32_T i;
         for (i = 0; i < 9; i++) {
-            SWatchFSM_PrevZCX->SWatch_Trig_ZCE[i] = POS_ZCSIG;
+            SWatchFSM_PrevZCX->SWatch_Trig_ZCE[i] = UNINITIALIZED_ZCSIG;
         }
 
         /* InitializeConditions for Chart: '<S1>/SWatch' */

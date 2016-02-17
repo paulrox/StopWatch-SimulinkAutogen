@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'SWatchFSM'.
  *
- * Model version                  : 1.187
+ * Model version                  : 1.199
  * Simulink Coder version         : 8.7 (R2014b) 08-Sep-2014
- * C/C++ source code generated on : Tue Jan 26 14:41:50 2016
+ * C/C++ source code generated on : Wed Feb 17 14:10:03 2016
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: 32-bit Generic

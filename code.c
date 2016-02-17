@@ -281,7 +281,6 @@ static uint8_T oldalarm = 3;
 static uint8_T oldtimer = 2;
 static uint8_T oh=99, om=99, os=99, ot=99;
 
-
 	Bwatch 	= (IsEvent(WATCHBPRESS)) 	? 1 : 0;
 	Bswatch = (IsEvent(SWATCHBPRESS)) 	? 1 : 0;
 	Balarm 	= (IsEvent(ALARMBPRESS))	? 1 : 0;
@@ -360,8 +359,8 @@ int main(void)
 			&watchset, &alarm_status, &timer_exp);
 
 	/* Application task set */
-	SetRelAlarm(AlarmTaskLCD, 10, 100);
-	SetRelAlarm(AlarmTaskClock, 10, 50);
+	SetRelAlarm(AlarmTaskLCD, 10, 150);
+	SetRelAlarm(AlarmTaskClock, 10, 100);
 
 	/* Forever loop: background activities (if any) should go here */
 	for (;;) { }

@@ -69,7 +69,7 @@ CPU mySystem {
 		KERNEL_TYPE = BCC1;
         	EE_OPT = "__OO_STARTOS_OLD__";
 
-		STATUS = EXTENDED;
+		STATUS = STANDARD;
 		STARTUPHOOK = FALSE;
 		ERRORHOOK = FALSE;
 		SHUTDOWNHOOK = FALSE;
@@ -96,11 +96,11 @@ CPU mySystem {
 		};
 	};
 	
-    	COUNTER myCounter {
-        	MINCYCLE = 2;
-			MAXALLOWEDVALUE = 0xFFFF ;
-        	TICKSPERBASE = 1;
-    	};
+    COUNTER myCounter {
+        MINCYCLE = 2;
+		MAXALLOWEDVALUE = 0xFFFF ;
+        TICKSPERBASE = 1;
+    };
 	
 	ALARM AlarmTaskLCD {
 		COUNTER = myCounter;
